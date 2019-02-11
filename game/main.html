@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>game</title>
+    <style>
+    canvas {
+    border: 1px solid #d3d3d3;
+    background-color: #f1f1f1;
+    }
+    </style>
+</head>
+<body onload="startGame()">
+<!--canvas id="canvasId" width="480" height="270" style=
+        "border:1px solid black;">
+    Ваш браузер не поддерживает  canvas
+</canvas-->
+<script src="gamelogic.js">
+
+</script>
+<button onmousedown="moveup()" onmouseup="stopMove()" ontouchstart="moveup()">UP</button>
+<button onmousedown="movedown()" onmouseup="stopMove()" ontouchstart="movedown()">DOWN</button>
+<button onmousedown="moveleft()" onmouseup="stopMove()" ontouchstart="moveleft()">LEFT</button>
+<button onmousedown="moveright()" onmouseup="stopMove()" ontouchstart="moveright()">RIGHT</button>
+</body>
+</html>
