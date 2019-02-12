@@ -3,7 +3,7 @@ var myObstacles = [];
 var myScore;
 
 function startGame() {
-    myGamePiece= new  component(30,30,"red",10,120);
+    myGamePiece= new  component(30,30,"flying.gif",10,120,"image");
     myObstacle = new component(10, 200, "green", 300, 120);
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
     // myUpBtn = new component(30, 30, "blue", 50, 10);
@@ -59,6 +59,10 @@ var myGameArea={
 
 function component(width,height,color,x,y,type) {
     this.type = type;
+    if (type == "image") {
+        this.image = new Image();
+        this.image.src = color;
+    }
     this.width = width;
     this.height =  height;
     this.speedX = 0;
@@ -71,6 +75,12 @@ function component(width,height,color,x,y,type) {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
+        }
+        else  if (type == "image") {
+            ctx.drawImage(this.image,
+                this.x,
+                this.y,
+                this.width, this.height);
         } else {
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -112,6 +122,7 @@ function component(width,height,color,x,y,type) {
 
 }
 function updateGameArea() {
+
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
@@ -171,7 +182,7 @@ function updateGameArea() {
     // myRightBtn.update();//controller on the canvas
 }
 function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+    if((myGameArea.frameNo / n) % 1 == 0) {return true;}
     return false;
 }
 function moveup() {
