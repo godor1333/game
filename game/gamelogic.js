@@ -1,11 +1,13 @@
-var mygamePiace;
+var myGamePiece;
 var myObstacles = [];
 var myScore;
+var myBackground;
 
 function startGame() {
-    myGamePiece= new  component(30,30,"flying.gif",10,120,"image");
-    myObstacle = new component(10, 200, "green", 300, 120);
+    myGamePiece= new  component(50,50,"fl0.png",10,120,"image");
+    myObstacle = new component(40, 200, "green", 300, 120);
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    myBackground = new component(1600, 500, "background.jpg", 0, 0, "background");
     // myUpBtn = new component(30, 30, "blue", 50, 10);
     // myDownBtn = new component(30, 30, "blue", 50, 70);
     // myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -59,7 +61,7 @@ var myGameArea={
 
 function component(width,height,color,x,y,type) {
     this.type = type;
-    if (type == "image") {
+    if (type == "image" || type == "background") {
         this.image = new Image();
         this.image.src = color;
     }
@@ -71,17 +73,21 @@ function component(width,height,color,x,y,type) {
     this.y=y;
     this.update=function () {
         ctx = myGameArea.context;
-        if (this.type == "text") {
+        if (this.type == "text" ) {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
         }
-        else  if (type == "image") {
+        else  if (type == "image" ||type == "background") {
             ctx.drawImage(this.image,
                 this.x,
                 this.y,
                 this.width, this.height);
-        } else {
+        }
+         else if (type == "background") {
+             ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
+         }
+        else {
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
@@ -124,6 +130,7 @@ function component(width,height,color,x,y,type) {
 function updateGameArea() {
 
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
             myGameArea.stop();
@@ -131,37 +138,42 @@ function updateGameArea() {
         }
     }
     myGameArea.clear();
+    myBackground.newPos();
+    myBackground.update();
     myGameArea.frameNo += 1;
     if (myGameArea.frameNo == 1 || everyinterval(150)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
-        maxHeight = 200;
+        maxHeight = 100;
         height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new component(10, height, "green", x, 0));
-        myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
+        myObstacles.push(new component(40, height, "green", x, 0));
+        myObstacles.push(new component(40, x - height - gap, "green", x, height + gap));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
     myScore.text = "SCORE: " + myGameArea.frameNo;
+
     myScore.update();
+
     myGamePiece.newPos();
     myGamePiece.update();
 
     myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
-    if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -1; }
-    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1; }
-    if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -1; }
-    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1; }
+    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.image.src = "fl1.png"; myGamePiece.speedX = -1;    }
+    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1;  }
+    if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.speedY = -1;  }
+    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1;  }
     if (myGameArea.touchX && myGameArea.touchY) {
         myGamePiece.x = myGameArea.x;
         myGamePiece.y = myGameArea.y;
     }
+    myBackground.speedX = -1;
     // if (myGameArea.x && myGameArea.y) {
     //     if (myUpBtn.clicked()) {
     //         myGamePiece.y -= 1;
@@ -185,22 +197,16 @@ function everyinterval(n) {
     if((myGameArea.frameNo / n) % 1 == 0) {return true;}
     return false;
 }
-function moveup() {
-    myGamePiece.speedY -= 1;
+function move(dir) {
+    myGamePiece.image.src = "fl0.png";
+    if (dir == "up") {myGamePiece.speedY = -1; }
+    if (dir == "down" ) {myGamePiece.speedY = 1; }
+    if (dir == "left") {myGamePiece.speedX = -1; }
+    if (dir == "right") {myGamePiece.speedX = 1; }
 }
 
-function movedown() {
-    myGamePiece.speedY += 1;
-}
-
-function moveleft() {
-    myGamePiece.speedX -= 1;
-}
-
-function moveright() {
-    myGamePiece.speedX += 1;
-}
-function stopMove() {
+function clearmove() {
+    myGamePiece.image.src = "fl1.png";
     myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
 }
