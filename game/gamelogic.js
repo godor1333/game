@@ -5,13 +5,15 @@ var myBackground;
 var mySound;
 var myMusic;
 function startGame() {
-    myGamePiece= new  component(50,50,"fl0.png",10,120,"image");
-    myObstacle = new component(40, 200, "green", 300, 120);
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    myBackground = new component(1500, 447, "background.jpg", 0, 0, "background");
-    mySound = new sound("LOW.mp3");
-    myMusic = new sound("backmusic.mp3");
+    myGamePiece= new  Component(50,50,"fl0.png",10,120,"image");
+    myGamePiece.gravity = 0.05;
+    myObstacles = new Component(40, 200, "green", 300, 120);
+    myScore = new Component("30px", "Consolas", "black", 280, 40, "text");
+    myBackground = new Component(1500, 447, "background.jpg", 0, 0, "background");
+    mySound = new Sound("LOW.mp3");
+    myMusic = new Sound("backmusic.mp3");
     myMusic.play();
+
     // myUpBtn = new component(30, 30, "blue", 50, 10);
     // myDownBtn = new component(30, 30, "blue", 50, 70);
     // myLeftBtn = new component(30, 30, "blue", 20, 40);
@@ -63,7 +65,7 @@ var myGameArea={
     }
 };
 
-function component(width,height,color,x,y,type) {
+function Component(width,height,color,x,y,type) {
     this.type = type;
     if (type === "image" || type === "background") {
         this.image = new Image();
@@ -73,6 +75,8 @@ function component(width,height,color,x,y,type) {
     this.height =  height;
     this.speedX = 0;
     this.speedY = 0;
+        this.gravity = 0;
+        this.gravitySpeed = 0;
     this.x=x;
     this.y=y;
     this.update=function () {
@@ -97,16 +101,48 @@ function component(width,height,color,x,y,type) {
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     };
-    this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.type === "background") {
-            if (this.x === -(this.width)) {
-                this.x = 0;
-            }
-        }
+    // this.newPos = function() {
+    //     // this.gravitySpeed += this.gravity;
+    //     // this.x += this.speedX;
+    //     // this.y += this.speedY + this.gravitySpeed;
+    //     // if (this.type === "background") {
+    //     //     if (this.x === -(this.width)) {
+    //     //         this.x = 0;
+    //     //     }
+    //     // }
+    //     this.gravitySpeed += this.gravity;
+    //     this.x += this.speedX;
+    //     this.y += this.speedY + this.gravitySpeed;
+    //     this.hitBottom();
+    // };
+    // this.hitBottom = function() {
+    //     var rockbottom = myGameArea.canvas.height - this.height;
+    //     if (this.y > rockbottom) {
+    //         this.y = rockbottom;
+    //     }
+    // };
 
-    };
+        this.hitBottom = function () {
+            var rockbottom = myGameArea.canvas.height - this.height;
+            if (this.y > rockbottom) {
+                this.y = rockbottom;
+                this.gravitySpeed = 0;
+
+            }
+        };
+        this.newPos = function () {
+            this.gravitySpeed += this.gravity;
+            this.x += this.speedX;
+            this.y += this.speedY + this.gravitySpeed;
+            this.hitBottom();
+            //     // if (this.type === "background") {
+            //     //     if (this.x === -(this.width)) {
+            //     //         this.x = 0;
+            //     //     }
+            //     // }
+            //
+        };
+
     this.crashWith = function(otherobj) {
         var myleft = this.x;
         var myright = this.x + (this.width);
@@ -125,6 +161,7 @@ function component(width,height,color,x,y,type) {
         }
         return crash;
     };
+
     // this.clicked = function() {
     //     var myleft = this.x;
     //     var myright = this.x + (this.width);
@@ -138,6 +175,7 @@ function component(width,height,color,x,y,type) {
     // };
 
 }
+
 function updateGameArea() {
 
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
@@ -162,8 +200,8 @@ function updateGameArea() {
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new component(40, height, "green", x, 0));
-        myObstacles.push(new component(40, x - height - gap, "green", x, height + gap));
+        myObstacles.push(new Component(40, height, "green", x, 0));
+        myObstacles.push(new Component(40, x - height - gap, "green", x, height + gap));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
@@ -171,10 +209,7 @@ function updateGameArea() {
     }
     myScore.text = "SCORE: " + myGameArea.frameNo;
 
-    myScore.update();
 
-    myGamePiece.newPos();
-    myGamePiece.update();
 
     myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
@@ -205,25 +240,28 @@ function updateGameArea() {
     // myDownBtn.update();
     // myLeftBtn.update();
     // myRightBtn.update();//controller on the canvas
+    myScore.update();
+    myGamePiece.newPos();
+    myGamePiece.update();
 }
 function everyinterval(n) {
-    if((myGameArea.frameNo / n) % 1 === 0) {return true;}
+    if((myGameArea.frameNo / n) %1 === 0){return true;}
     return false;
 }
-function move(dir) {
-    myGamePiece.image.src = "fl0.png";
-    if (dir === "up") {myGamePiece.speedY = -1; }
-    if (dir === "down" ) {myGamePiece.speedY = 1; }
-    if (dir === "left") {myGamePiece.speedX = -1; }
-    if (dir === "right") {myGamePiece.speedX = 1; }
-}
-
-function clearmove() {
-    myGamePiece.image.src = "fl1.png";
-    myGamePiece.speedX = 0;
-    myGamePiece.speedY = 0;
-}
-function sound(src) {
+// function move(dir) {
+//     myGamePiece.image.src = "fl0.png";
+//     if (dir === "up") {myGamePiece.speedY = -1; }
+//     if (dir === "down" ) {myGamePiece.speedY = 1; }
+//     if (dir === "left") {myGamePiece.speedX = -1; }
+//     if (dir === "right") {myGamePiece.speedX = 1; }
+// }
+//
+// function clearmove() {
+//     myGamePiece.image.src = "fl1.png";
+//     myGamePiece.speedX = 0;
+//     myGamePiece.speedY = 0;
+// }
+function Sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
@@ -232,8 +270,13 @@ function sound(src) {
     document.body.appendChild(this.sound);
     this.play = function(){
         this.sound.play();
-    }
+    };
     this.stop = function(){
         this.sound.pause();
     }
 }
+// function accelerate(n) {
+//     if (!myGameArea.interval) {myGameArea.interval = setInterval(updateGameArea, 20);}
+//
+//     myGamePiece.gravity = n;
+// }
