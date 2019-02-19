@@ -6,8 +6,8 @@ var mySound;
 var myMusic;
 function startGame() {
     myGamePiece= new  Component(50,50,"fl0.png",10,120,"image");
-    myGamePiece.gravity = 0.05;
-    myObstacles = new Component(40, 200, "green", 300, 120);
+    myGamePiece.gravity = 0.01;
+    myObstacle = new Component(40, 200, "spr_block.png", 300, 120,"image");
     myScore = new Component("30px", "Consolas", "black", 280, 40, "text");
     myBackground = new Component(1500, 447, "background.jpg", 0, 0, "background");
     mySound = new Sound("LOW.mp3");
@@ -86,12 +86,12 @@ function Component(width,height,color,x,y,type) {
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
         }
-          if (type === "image" ||type === "background") {
+          else if (type === "image" ||type === "background") {
             ctx.drawImage(this.image,
                 this.x,
                 this.y,
                 this.width, this.height);
-              if (type === "background") {
+               if (type === "background") {
                   ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height);
               }
         }
@@ -135,12 +135,12 @@ function Component(width,height,color,x,y,type) {
             this.x += this.speedX;
             this.y += this.speedY + this.gravitySpeed;
             this.hitBottom();
-            //     // if (this.type === "background") {
-            //     //     if (this.x === -(this.width)) {
-            //     //         this.x = 0;
-            //     //     }
-            //     // }
-            //
+                if (this.type === "background") {
+                    if (this.x === -(this.width)) {
+                        this.x = 0;
+                    }
+                }
+
         };
 
     this.crashWith = function(otherobj) {
@@ -200,8 +200,8 @@ function updateGameArea() {
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new Component(40, height, "green", x, 0));
-        myObstacles.push(new Component(40, x - height - gap, "green", x, height + gap));
+        myObstacles.push(new Component(40, height, "spr_block.png", x, 0,"image"));
+        myObstacles.push(new Component(40, x - height - gap, "spr_block.png", x, height + gap,"image"));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
@@ -213,10 +213,10 @@ function updateGameArea() {
 
     myGamePiece.speedX = 0;
     myGamePiece.speedY = 0;
-    if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.image.src = "fl1.png"; myGamePiece.speedX = -1;    }
-    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1;  }
-    if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.speedY = -1;  }
-    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1;  }
+    // if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.image.src = "fl1.png"; myGamePiece.speedX = -1;    }
+    // if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1;  }
+    // if (myGameArea.keys && myGameArea.keys[38]) { myGamePiece.speedY = -1;  }
+    // if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1;  }
     if (myGameArea.touchX && myGameArea.touchY) {
         myGamePiece.x = myGameArea.x;
         myGamePiece.y = myGameArea.y;
@@ -248,18 +248,18 @@ function everyinterval(n) {
     if((myGameArea.frameNo / n) %1 === 0){return true;}
     return false;
 }
-// function move(dir) {
+// function move() {
 //     myGamePiece.image.src = "fl0.png";
-//     if (dir === "up") {myGamePiece.speedY = -1; }
-//     if (dir === "down" ) {myGamePiece.speedY = 1; }
-//     if (dir === "left") {myGamePiece.speedX = -1; }
-//     if (dir === "right") {myGamePiece.speedX = 1; }
+//     // if (dir === "up") {myGamePiece.speedY = -1; }
+//     // if (dir === "down" ) {myGamePiece.speedY = 1; }
+//     // if (dir === "left") {myGamePiece.speedX = -1; }
+//     // if (dir === "right") {myGamePiece.speedX = 1; }
 // }
-//
+// //
 // function clearmove() {
 //     myGamePiece.image.src = "fl1.png";
-//     myGamePiece.speedX = 0;
-//     myGamePiece.speedY = 0;
+//     // myGamePiece.speedX = 0;
+//     // myGamePiece.speedY = 0;
 // }
 function Sound(src) {
     this.sound = document.createElement("audio");
@@ -275,8 +275,10 @@ function Sound(src) {
         this.sound.pause();
     }
 }
-// function accelerate(n) {
-//     if (!myGameArea.interval) {myGameArea.interval = setInterval(updateGameArea, 20);}
-//
-//     myGamePiece.gravity = n;
-// }
+function accelerate(n,dir) {
+    if(dir==='up'){myGamePiece.image.src = "fl0.png";}
+    else if(dir==='down'){    myGamePiece.image.src = "fl1.png";}
+    if (!myGameArea.interval) {myGameArea.interval = setInterval(updateGameArea, 20);}
+
+    myGamePiece.gravity = n;
+}
