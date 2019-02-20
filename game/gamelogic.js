@@ -8,7 +8,7 @@ function startGame() {
     myGamePiece= new  Component(40,40,"fl0.png",10,120,"image");
     myGamePiece.gravity = 0.01;
     myObstacle = new Component(40, 200, "spr_block.png", 300, 120,"image");
-    myScore = new Component("30px", "Consolas", "black", 280, 40, "text");
+    myScore = new Component("30px", "Consolas", "white", 230, 40, "text");
     myBackground = new Component(1500, 447, "background.jpg", 0, 0, "background");
     mySound = new Sound("LOW.mp3");
     myMusic = new Sound("backmusic.mp3");
@@ -25,6 +25,7 @@ var myGameArea={
     start : function () {
         this.canvas.width = 480;
         this.canvas.height = 270;
+        this.score=0;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
@@ -74,9 +75,11 @@ function Component(width,height,color,x,y,type) {
     this.width = width;
     this.height =  height;
     this.speedX = 0;
+    this.bounce = 0.6;
     this.speedY = 0;
         this.gravity = 0;
         this.gravitySpeed = 0;
+
     this.x=x;
     this.y=y;
     this.update=function () {
@@ -126,7 +129,8 @@ function Component(width,height,color,x,y,type) {
             var rockbottom = myGameArea.canvas.height - this.height;
             if (this.y > rockbottom) {
                 this.y = rockbottom;
-                this.gravitySpeed = 0;
+               // this.gravitySpeed = 0;
+                this.gravitySpeed = -(this.gravitySpeed * this.bounce);
 
             }
         };
@@ -178,7 +182,7 @@ function Component(width,height,color,x,y,type) {
 
 function updateGameArea() {
 
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap,score=0;
+    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
 
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
@@ -202,13 +206,13 @@ function updateGameArea() {
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
         myObstacles.push(new Component(40, height, "up_pipe.png", x, 0,"image"));
         myObstacles.push(new Component(40, x - height - gap, "down_pipe.png", x, height + gap,"image"));
-    ++score;
+    if(x>400){++myGameArea.score};
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
-    myScore.text = "SCOREjhk: " + score/*myGameArea.frameNo*/;
+    myScore.text = /*"SCOR: " +*/ myGameArea.score/*myGameArea.frameNo*/;
 
 
 
