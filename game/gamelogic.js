@@ -5,7 +5,7 @@ var myBackground;
 var mySound;
 var myMusic;
 function startGame() {
-    myGamePiece= new  Component(50,50,"fl0.png",10,120,"image");
+    myGamePiece= new  Component(40,40,"fl0.png",10,120,"image");
     myGamePiece.gravity = 0.01;
     myObstacle = new Component(40, 200, "spr_block.png", 300, 120,"image");
     myScore = new Component("30px", "Consolas", "black", 280, 40, "text");
@@ -178,7 +178,7 @@ function Component(width,height,color,x,y,type) {
 
 function updateGameArea() {
 
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
+    var x, height, gap, minHeight, maxHeight, minGap, maxGap,score=0;
 
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
@@ -202,12 +202,13 @@ function updateGameArea() {
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
         myObstacles.push(new Component(40, height, "up_pipe.png", x, 0,"image"));
         myObstacles.push(new Component(40, x - height - gap, "down_pipe.png", x, height + gap,"image"));
+    ++score;
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].x += -1;
         myObstacles[i].update();
     }
-    myScore.text = "SCORE: " + myGameArea.frameNo;
+    myScore.text = "SCOREjhk: " + score/*myGameArea.frameNo*/;
 
 
 
