@@ -9,5 +9,5 @@
 Чтобы запустить приложение склонируйте себе репозиторий и запустите .html файл.
 Управление происходит по нажатию на кнопку(или экран)
 h3 Скриншоты из игры
-<img src="https://wampi.ru/image/6PfH5My" >
+<img src="https://github.com/godor1333/game-flappy-bird/blob/master/game/src/Снимок.png" >
 
